@@ -2,7 +2,7 @@ from types import FunctionType
 from argparse import ArgumentParser
 import inspect
 import sys
-from packaging.package_manager import PackageManager
+from qpm.packaging.package_manager import PackageManager
 
 
 def main():

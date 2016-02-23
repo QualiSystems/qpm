@@ -3,7 +3,6 @@ import sys
 import zipfile
 import ConfigParser
 import xml.etree.ElementTree as ET
-import time
 
 DRIVER_FILE_BASE_DIR = 'vCenterShellPackage'
 STRIPING_CHARS = ' \t\n\r'
