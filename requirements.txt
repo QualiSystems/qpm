@@ -1,4 +1,0 @@
-jsonpickle
-jsonschema
-enum
-python_jsonschema_objects
