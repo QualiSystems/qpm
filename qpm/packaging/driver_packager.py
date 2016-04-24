@@ -4,7 +4,6 @@ import zipfile
 import ConfigParser
 import xml.etree.ElementTree as ET
 
-DRIVER_FILE_BASE_DIR = 'vCenterShellPackage'
 STRIPING_CHARS = ' \t\n\r'
 DRIVER_FOLDER = 'driver_folder'
 INCLUDE_FILES = 'include_files'
@@ -51,18 +50,21 @@ def add_version_file_to_zip(ziph, driver_path=None):
 
 
 def main(args):
-    config_file_name = args[1]
+    package_name = args[1]
+    config_file_name = args[2]
 
-    pack_driver(config_file_name)
+    pack_driver(package_name, config_file_name)
 
 
-def pack_driver(config_file_name):
+def pack_driver(package_name, config_file_name):
     config = ConfigParser.SafeConfigParser()
     config.readfp(open(config_file_name))
     driver = config.get('Packaging', DRIVER_FOLDER)
     include_dirs = config.get('Packaging', INCLUDE_DIRS).split(',')
     target_name = config.get('Packaging', TARGET_NAME)
     target_dir = config.get('Packaging', TARGET_DIR)
+    package_location = '{0}Package'.format(package_name)
+
     try:
         include_files = config.get('Packaging', INCLUDE_FILES).split(',')
     except Exception:
@@ -75,8 +77,9 @@ def pack_driver(config_file_name):
     if is_driver:
         _update_driver_version(driver, version)
     else:
-        _update_script_version(target_name, version)
-    zip_name = os.path.join(DRIVER_FILE_BASE_DIR, target_dir, target_name + '.zip')
+        _update_script_version(target_name, version, package_location)
+
+    zip_name = os.path.join(package_location, target_dir, target_name + '.zip')
     print 'Creating script {0} version {1}'.format(zip_name, version)
     ensure_dir(zip_name)
     # deletes old package
@@ -115,9 +118,9 @@ def _get_current_dir():
     return os.getcwd()
 
 
-def _update_script_version(script_name, version):
+def _update_script_version(script_name, version, package_location):
     ns = {'default': 'http://schemas.qualisystems.com/ResourceManagement/DataModelSchema.xsd'}
-    datamodel_path = os.path.join(_get_current_dir(),'vCenterShellPackage', 'DataModel', 'datamodel.xml')
+    datamodel_path = os.path.join(_get_current_dir(), package_location, 'DataModel', 'datamodel.xml')
 
     tree = ET.parse(datamodel_path)
     scripts = tree.getroot().findall('.//default:ScriptDescriptors/default:ScriptDescriptor/[@Name="{0}"]'
