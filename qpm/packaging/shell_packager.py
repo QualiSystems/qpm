@@ -14,8 +14,6 @@ class ShellPackager(object):
         package_full_name = self.get_package_dir_name(package_name)
         zip_dir(package_full_name, zip_file, False)
 
-        add_version_file_to_zip(zip_file)
-
         zip_file.close()
 
     @staticmethod
