@@ -14,7 +14,7 @@ VERSION_FILENAME = 'version.txt'
 TARGET_DIR = 'target_dir'
 
 
-def zip_dir(path, zip_handler, include_dir=True, only_init=False):
+def zip_dir(path, zip_handler, include_dir=True):
     """
     zip all files and items in dir
     :param only_init:
@@ -26,17 +26,32 @@ def zip_dir(path, zip_handler, include_dir=True, only_init=False):
     for root, dirs, files in os.walk(path):
         for file_to_zip in files:
             filename = os.path.join(root, file_to_zip)
-            zip_con = filename.split('\\', 1)[1].replace('\\', '/')
+            zip_con = filename.replace('\\', '/')
+
             if zip_con in zip_handler.namelist():
                 continue
-            if only_init and "__init__.py" not in filename:
-                continue
+
             add_file(filename, zip_handler, include_dir)
 
-    subroot = path.split('\\')
-    if len(subroot) > 1:
-        subroot = '\\'.join(subroot[:len(subroot) - 1])
-        zip_dir(subroot, zip_handler, include_dir=False, only_init=True)
+
+def add_init_files(path, zip_handler):
+    """
+    adds init files to the included folder
+    :param path: str
+
+    """
+    paths = path.split('\\')
+    paths = paths[:len(paths) - 1]
+    for sub_path in paths:
+        for root, dirs, files in os.walk(sub_path):
+            for file_to_zip in [x for x in files if '__init__.py' in x]:
+                filename = os.path.join(root, file_to_zip)
+                zip_con = filename.replace('\\', '/')
+
+                if zip_con in zip_handler.namelist():
+                    continue
+
+                add_file(filename, zip_handler, False)
 
 
 def add_file(filename, zip_handler, include_dir=True):
@@ -45,8 +60,8 @@ def add_file(filename, zip_handler, include_dir=True):
             zip_handler.write(filename)
         else:
             splited_filename = filename.split('\\', 1)
-            s_filename = splited_filename[1] if len(splited_filename) > 1 else filename
-            zip_handler.write(filename, s_filename)
+            # s_filename = splited_filename[1] if len(splited_filename) > 1 else filename
+            zip_handler.write(filename) # , s_filename)
 
 
 def ensure_dir(f):
@@ -111,8 +126,15 @@ def pack_driver(package_name, config_file_name):
     add_version_file_to_zip(zip_file)
     for file_to_include in include_files:
         add_file(file_to_include, zip_file, False)
+
     for dir_to_include in include_dirs:
         zip_dir(dir_to_include, zip_file)
+    zip_file.close()
+
+    zip_file = zipfile.ZipFile(zip_name, 'a')
+    for dir_to_include in include_dirs:
+        add_init_files(dir_to_include, zip_file)
+
     zip_file.close()
 
 
