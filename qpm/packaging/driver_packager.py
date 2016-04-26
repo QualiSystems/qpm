@@ -14,17 +14,29 @@ VERSION_FILENAME = 'version.txt'
 TARGET_DIR = 'target_dir'
 
 
-def zip_dir(path, zip_handler, include_dir=True):
+def zip_dir(path, zip_handler, include_dir=True, only_init=False):
     """
     zip all files and items in dir
+    :param only_init:
     :param path:
     :param zip_handler: zip file handler
     :param boolean include_dir: specify if we want the archive with or without the directory
     """
+
     for root, dirs, files in os.walk(path):
         for file_to_zip in files:
             filename = os.path.join(root, file_to_zip)
+            zip_con = filename.split('\\', 1)[1].replace('\\', '/')
+            if zip_con in zip_handler.namelist():
+                continue
+            if only_init and "__init__.py" not in filename:
+                continue
             add_file(filename, zip_handler, include_dir)
+
+    subroot = path.split('\\')
+    if len(subroot) > 1:
+        subroot = '\\'.join(subroot[:len(subroot) - 1])
+        zip_dir(subroot, zip_handler, include_dir=False, only_init=True)
 
 
 def add_file(filename, zip_handler, include_dir=True):
