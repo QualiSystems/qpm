@@ -14,7 +14,7 @@ VERSION_FILENAME = 'version.txt'
 TARGET_DIR = 'target_dir'
 
 
-def zip_dir(path, zip_handler, include_dir=True):
+def zip_dir(path, zip_handler, include_dir=True, use_arc_name=False):
     """
     zip all files and items in dir
     :param only_init:
@@ -31,7 +31,7 @@ def zip_dir(path, zip_handler, include_dir=True):
             if zip_con in zip_handler.namelist():
                 continue
 
-            add_file(filename, zip_handler, include_dir)
+            add_file(filename, zip_handler, include_dir, use_arc_name)
 
 
 def add_init_files(path, zip_handler):
@@ -54,14 +54,17 @@ def add_init_files(path, zip_handler):
                 add_file(filename, zip_handler, False)
 
 
-def add_file(filename, zip_handler, include_dir=True):
+def add_file(filename, zip_handler, include_dir=True, use_arce_name=False):
     if os.path.isfile(filename):  # regular files only
         if include_dir:
             zip_handler.write(filename)
         else:
-            splited_filename = filename.split('\\', 1)
-            # s_filename = splited_filename[1] if len(splited_filename) > 1 else filename
-            zip_handler.write(filename) # , s_filename)
+            if not use_arce_name:
+                s_filename = filename
+            else:
+                splited_filename = filename.split('\\', 1)
+                s_filename = splited_filename[1] if len(splited_filename) > 1 else filename
+            zip_handler.write(filename, s_filename)
 
 
 def ensure_dir(f):
