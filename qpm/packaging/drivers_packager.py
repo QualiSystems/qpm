@@ -15,5 +15,5 @@ class DriversPackager(object):
         spec_files = [os.path.join(current_path, specs_dir, f) for f in os.listdir(specs_dir) if f.endswith('.ini')]
 
         for spec_file in spec_files:
-            pack_driver(spec_file)
+            pack_driver(package_name, spec_file)
 
