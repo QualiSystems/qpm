@@ -28,10 +28,21 @@ class AutoArgumentParser(object):
             method = getattr(package_manager, action)
             arguments = AutoArgumentParser._get_method_arguments(method)
             for argument in arguments:
-                parser.add_argument('--' + argument, type=str, required=True)
+                is_required = AutoArgumentParser._is_required(method, argument)
+                parser.add_argument('--' + argument, type=str, required=is_required)
             args = parser.parse_args()
             method_params = {arg: getattr(args, arg) for arg in arguments}
             method(**method_params)
+
+    @staticmethod
+    def _is_required(method, arg_name):
+        getargspec = inspect.getargspec(method)
+        index = getargspec.args.index(arg_name)
+        index_from_the_end = len(getargspec.args) - 1 - index
+        # argument has default value and thus is not required
+        if index_from_the_end < len(inspect.getargspec(method).defaults):
+            return False
+        return True
 
     @staticmethod
     def _get_method_arguments(method):

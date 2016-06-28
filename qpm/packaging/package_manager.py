@@ -8,11 +8,11 @@ class PackageManager(object):
     def __init__(self):
         pass
 
-    def pack(self, package_name):
+    def pack(self, package_name, version=None):
         drivers_packager = DriversPackager()
-        drivers_packager.package_drivers(package_name)
+        drivers_packager.package_drivers(package_name, version)
         packager = ShellPackager()
-        packager.create_shell_package(package_name)
+        packager.create_shell_package(package_name, version)
 
     def publish(self, package_name):
         packager = ShellPublisher()
@@ -21,7 +21,3 @@ class PackageManager(object):
     def install(self, package_name):
         installer = ShellInstaller()
         installer.install(package_name)
-
-
-
-

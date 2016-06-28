@@ -5,7 +5,7 @@ from driver_packager import pack_driver
 class DriversPackager(object):
 
     @staticmethod
-    def package_drivers(package_name):
+    def package_drivers(package_name, version):
         specs_dir = package_name + '_specs'
 
         if not os.path.exists(specs_dir):
@@ -15,5 +15,5 @@ class DriversPackager(object):
         spec_files = [os.path.join(current_path, specs_dir, f) for f in os.listdir(specs_dir) if f.endswith('.ini')]
 
         for spec_file in spec_files:
-            pack_driver(package_name, spec_file)
+            pack_driver(package_name, spec_file, version)
 

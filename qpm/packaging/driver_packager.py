@@ -73,20 +73,24 @@ def ensure_dir(f):
         os.makedirs(d)
 
 
-def add_version_file_to_zip(ziph, driver_path=None):
+def add_version_file_to_zip(ziph, version, driver_path=None):
     if not os.path.exists(VERSION_FILENAME):
         raise Exception('no version file found')
+    version_file = open(VERSION_FILENAME, 'w+')
+    version_file.write(version)
+    version_file.close()
     ziph.write(VERSION_FILENAME)
 
 
 def main(args):
     package_name = args[1]
     config_file_name = args[2]
+    version = args[3]
 
-    pack_driver(package_name, config_file_name)
+    pack_driver(package_name, config_file_name, version)
 
 
-def pack_driver(package_name, config_file_name):
+def pack_driver(package_name, config_file_name, version):
     config = ConfigParser.SafeConfigParser()
     config.readfp(open(config_file_name))
     driver = config.get('Packaging', DRIVER_FOLDER)
@@ -103,7 +107,8 @@ def pack_driver(package_name, config_file_name):
         is_driver = config.getboolean('Packaging', IS_DRIVER)
     except Exception:
         is_driver = False
-    version = _get_version()
+    if not version:
+        version = _get_version()
     if is_driver:
         _update_driver_version(driver, version)
     else:
@@ -126,7 +131,7 @@ def pack_driver(package_name, config_file_name):
             for i in range(path_parts):
                 path_fixer += '../'
             os.chdir(os.path.join(os.getcwd(), path_fixer))
-    add_version_file_to_zip(zip_file)
+    add_version_file_to_zip(zip_file, version)
     for file_to_include in include_files:
         add_file(file_to_include, zip_file, False)
 

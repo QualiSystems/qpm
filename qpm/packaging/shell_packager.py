@@ -5,8 +5,9 @@ from driver_packager import zip_dir, add_version_file_to_zip
 
 class ShellPackager(object):
 
-    def create_shell_package(self, package_name):
-
+    def create_shell_package(self, package_name, version):
+        if version:
+            self.update_version(version, package_name)
         print "Packaging {0}.zip".format(package_name)
 
         zip_file = zipfile.ZipFile(package_name + ".zip", 'w')
@@ -23,7 +24,9 @@ class ShellPackager(object):
             raise Exception('package folder "{0}" not found'.format(package_name))
         return package_name
 
-
-
-
-
+    @staticmethod
+    def update_version(version, package_name):
+        version_path = os.path.join(ShellPackager.get_package_dir_name(package_name), 'version.txt')
+        file = open(version_path, 'w+')
+        file.write(version)
+        file.close()
