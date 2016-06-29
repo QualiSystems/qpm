@@ -5,30 +5,33 @@ import sys
 
 
 class AutoArgumentParser(object):
-    def __init__(self, type_to_parse, program=None):
+    def __init__(self, type_to_parse):
+        self.parser = ArgumentParser()
         self.type = type_to_parse
-        self.program = program
 
     def parse_args(self):
         actions = self._get_actions()
-        parser = ArgumentParser(prog=self.program)
+        parser = ArgumentParser()
         parser.add_argument('action', type=str, help='Action to perform', choices=actions)
-        package_manager = self.type()
 
-        args = parser.parse_args()
-        action = args.action
-
-        if action not in actions:
-            print 'Action {0} is not supported'.format(action)
-            parser.print_help()
+        # no arguments provided
+        if len(sys.argv) == 1:
+            # will display available actions
+            parser.parse_args()
             return
-        method = getattr(package_manager, action)
-        arguments = AutoArgumentParser._get_method_arguments(method)
-        for argument in arguments:
-            parser.add_argument('--' + argument, type=str, required=True, nargs='?')
-        args = parser.parse_args()
-        method_params = {arg: getattr(args, arg) for arg in arguments}
-        method(**method_params)
+
+        package_manager = self.type()
+        if len(sys.argv) > 1:
+            action = sys.argv[1]
+            if action not in actions:
+                raise ValueError('Action {0} is not supported'.format(action))
+            method = getattr(package_manager, action)
+            arguments = AutoArgumentParser._get_method_arguments(method)
+            for argument in arguments:
+                parser.add_argument('--' + argument, type=str, required=True)
+            args = parser.parse_args()
+            method_params = {arg: getattr(args, arg) for arg in arguments}
+            method(**method_params)
 
     @staticmethod
     def _get_method_arguments(method):
