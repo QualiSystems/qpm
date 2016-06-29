@@ -5,34 +5,43 @@ import sys
 
 
 class AutoArgumentParser(object):
-    def __init__(self, type_to_parse):
-        self.parser = ArgumentParser()
+    def __init__(self, type_to_parse, program=None):
         self.type = type_to_parse
+        self.program = program
 
     def parse_args(self):
         actions = self._get_actions()
-        parser = ArgumentParser()
+        parser = ArgumentParser(prog=self.program)
         parser.add_argument('action', type=str, help='Action to perform', choices=actions)
-
-        # no arguments provided
-        if len(sys.argv) == 1:
-            # will display available actions
-            parser.parse_args()
-            return
-
         package_manager = self.type()
-        if len(sys.argv) > 1:
-            action = sys.argv[1]
-            if action not in actions:
-                raise ValueError('Action {0} is not supported'.format(action))
-            method = getattr(package_manager, action)
-            arguments = AutoArgumentParser._get_method_arguments(method)
-            for argument in arguments:
-                is_required = AutoArgumentParser._is_required(method, argument)
-                parser.add_argument('--' + argument, type=str, required=is_required)
-            args = parser.parse_args()
-            method_params = {arg: getattr(args, arg) for arg in arguments}
-            method(**method_params)
+
+        args = parser.parse_args()
+        action = args.action
+
+        if action not in actions:
+            print 'Action {0} is not supported'.format(action)
+            parser.print_help()
+            return
+        method = getattr(package_manager, action)
+        arguments = AutoArgumentParser._get_method_arguments(method)
+        for argument in arguments:
+            parser.add_argument('--' + argument, type=str, required=_is_required, nargs='?')
+        args = parser.parse_args()
+        method_params = {arg: getattr(args, arg) for arg in arguments}
+        method(**method_params)
+
+        if action not in actions:
+            print 'Action {0} is not supported'.format(action)
+            parser.print_help()
+            return
+        method = getattr(package_manager, action)
+        arguments = AutoArgumentParser._get_method_arguments(method)
+        for argument in arguments:
+            parser.add_argument('--' + argument, type=str, required=True, nargs='?')
+        args = parser.parse_args()
+        method_params = {arg: getattr(args, arg) for arg in arguments}
+        method(**method_params)
+
 
     @staticmethod
     def _is_required(method, arg_name):
