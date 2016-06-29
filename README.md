@@ -12,6 +12,11 @@ Pack a CloudShell shell
 python -m qpm pack --package_name vCenterShell
 ```
 
+Pack a CloudShell shell as specific version
+```
+python -m qpm pack --package_name vCenterShell --version 1.0.21
+```
+
 
 Install package into QualiSystems CloudShell 
 ```
