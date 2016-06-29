@@ -25,8 +25,7 @@ class AutoArgumentParser(object):
         method = getattr(package_manager, action)
         arguments = AutoArgumentParser._get_method_arguments(method)
         for argument in arguments:
-            is_required = AutoArgumentParser._is_required(method, argument)
-            parser.add_argument('--' + argument, type=str, required=is_required, nargs='?')
+            parser.add_argument('--' + argument, type=str, required=_is_required, nargs='?')
         args = parser.parse_args()
         method_params = {arg: getattr(args, arg) for arg in arguments}
         method(**method_params)
