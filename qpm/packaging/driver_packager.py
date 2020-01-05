@@ -1,7 +1,7 @@
 import os
 import sys
 import zipfile
-import ConfigParser
+import configparser
 import xml.etree.ElementTree as ET
 
 STRIPING_CHARS = ' \t\n\r'
@@ -87,7 +87,7 @@ def main(args):
 
 
 def pack_driver(package_name, config_file_name):
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.SafeConfigParser()
     config.readfp(open(config_file_name))
     driver = config.get('Packaging', DRIVER_FOLDER)
     include_dirs = config.get('Packaging', INCLUDE_DIRS).split(',')
@@ -110,7 +110,7 @@ def pack_driver(package_name, config_file_name):
         _update_script_version(target_name, version, package_location)
 
     zip_name = os.path.join(package_location, target_dir, target_name + '.zip')
-    print 'Creating script {0} version {1}'.format(zip_name, version)
+    print('Creating script {0} version {1}'.format(zip_name, version))
     ensure_dir(zip_name)
     # deletes old package
     if os.path.isfile(zip_name):
