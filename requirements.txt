@@ -1,6 +1,1 @@
-<<<<<<< HEAD
 configparser
-=======
-configparser
-urllib
->>>>>>> 8fe9817... support Python 3
