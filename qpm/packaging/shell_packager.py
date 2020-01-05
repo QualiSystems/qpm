@@ -1,13 +1,13 @@
 import os
 import zipfile
-from driver_packager import zip_dir, add_version_file_to_zip
+from .driver_packager import zip_dir, add_version_file_to_zip
 
 
 class ShellPackager(object):
 
     def create_shell_package(self, package_name):
 
-        print "Packaging {0}.zip".format(package_name)
+        print("Packaging {0}.zip".format(package_name))
 
         zip_file = zipfile.ZipFile(package_name + ".zip", 'w')
 

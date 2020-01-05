@@ -7,7 +7,7 @@ SERVER_VERSION = '6.3.0'
 import re
 from zipfile import ZipFile
 from io import BytesIO
-import urllib2
+import urllib.request, urllib.error
 
 def urlencode(s):
     return s.replace('+', '%2B').replace('/', '%2F').replace('=', '%3D')
@@ -16,8 +16,8 @@ class QualiAPIClient(object):
     def __init__(self, ip, port, username, password, domain):
         self.ip = ip
         self.port = port
-        opener = urllib2.build_opener(urllib2.HTTPHandler)
-        request = urllib2.Request('http://'+ip+':'+str(port)+'/API/Auth/Login',
+        opener = urllib.request.build_opener(urllib.request.HTTPHandler)
+        request = urllib.request.Request('http://'+ip+':'+str(port)+'/API/Auth/Login',
                                   data='username='+username+'&password='+urlencode(password)+'&domain='+domain)
         request.add_header('Content-Type', 'application/x-www-form-urlencoded')
         backup = request.get_method
@@ -32,7 +32,7 @@ class QualiAPIClient(object):
         if not isinstance(toponames, list):
             toponames = [toponames]
         fd = '{ "TopologyNames": ["'+("','".join(toponames))+'"] }'
-        request = urllib2.Request('http://'+self.ip+':'+str(self.port)+'/API/Package/ExportPackage', data=fd)
+        request = urllib.request.Request('http://'+self.ip+':'+str(self.port)+'/API/Package/ExportPackage', data=fd)
         backup = request.get_method
         request.get_method = lambda: 'POST'
         request.add_header('Authorization', 'Basic '+self.token)
@@ -40,7 +40,7 @@ class QualiAPIClient(object):
         request.add_header('Accept', '*/*')
         request.add_header('Content-Length', str(len(fd)))
         request.get_method = backup
-        opener = urllib2.build_opener(urllib2.HTTPHandler)
+        opener = urllib.request.build_opener(urllib.request.HTTPHandler)
         url = opener.open(request)
 
         s = url.read()
@@ -122,7 +122,7 @@ class QualiAPIClient(object):
 
         fdreader = FakeReader(fd)
 
-        request = urllib2.Request('http://'+self.ip+':'+str(self.port)+'/API/Package/ImportPackage', data=fdreader)
+        request = urllib.request.Request('http://'+self.ip+':'+str(self.port)+'/API/Package/ImportPackage', data=fdreader)
         backup = request.get_method
         request.get_method = lambda: 'POST'
         # request.add_header('User-Agent', 'curl/7.39.0')
@@ -136,7 +136,7 @@ class QualiAPIClient(object):
         request.add_header('Content-Length', str(len(fd)))
         # request.add_header('Content-Type', 'application/zip')
         request.get_method = backup
-        opener = urllib2.build_opener(urllib2.HTTPHandler)
+        opener = urllib.request.build_opener(urllib.request.HTTPHandler)
         url = opener.open(request)
 
         try:
