@@ -1,7 +1,7 @@
-from drivers_packager import DriversPackager
-from shell_installer import ShellInstaller
-from shell_publisher import ShellPublisher
-from shell_packager import ShellPackager
+from .drivers_packager import DriversPackager
+from .shell_installer import ShellInstaller
+from .shell_publisher import ShellPublisher
+from .shell_packager import ShellPackager
 
 
 class PackageManager(object):

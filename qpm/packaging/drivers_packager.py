@@ -1,5 +1,5 @@
 import os
-from driver_packager import pack_driver
+from .driver_packager import pack_driver
 
 
 class DriversPackager(object):
